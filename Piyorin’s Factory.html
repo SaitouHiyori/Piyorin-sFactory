@@ -1,0 +1,142 @@
+<div id="doc" class="markdown-body container-fluid"><h1 id="piyorin’s-factory">Piyorin’s Factory</h1><h2 id="作品一覧">作品一覧</h2><ul>
+<li>FryFrying</li>
+<li>Color Runner</li>
+<li>だんじょんくえすと！</li>
+</ul><h3 id="ｆｒｙｆｒｙｉｎｇ"><mark>ＦｒｙＦｒｙｉｎｇ</mark></h3><p><img src="https://i.imgur.com/idoZIn6.jpg" alt=""></p><ul>
+<li>作品概要</li>
+<li>ゲーム制作</li>
+</ul><h4 id="作品概要">作品概要</h4><p>ジャンル　　　　：プチッとアクション<br>
+プラットフォーム：ＰＣ</p><p>ハエは決意した。人間に反逆することを…！<br>
+自らを潰した人間を潰し返すのだ。</p><h4 id="ゲーム制作">ゲーム制作</h4><p>開発環境：Ｕｎｉｔｙ<br>
+開発期間：３週間程度（週休２日／１日４．５時間前後）<br>
+開発人数：４人<br>
+担当　　：メインプログラマー（プロジェクト運営・プログラム管理）</p><p>１年次の夏休み終了後に作成した。初めてのチーム制作でもあった。<br>
+制作の目的は「半年間で学んできたことを形にする」。<br>
+Ｕｎｉｔｙをつかった当たり判定や、transform.positionを変更することによる移動などを使用できるアクションゲームを使用した。<br>
+最も苦労したのはエネミーのＡＩ。<br>
+近づく・攻撃する・逃げるなど複数の行動パターンの切り替えを行うのが当時は苦労した。<br>
+距離を計って一定時間経過で行動パターンの変更を行った。</p><p>▼エネミーの行動スクリプト</p><pre><code>void Update (){
+
+    Vector3 Direction = Fly.transform.position - transform.position; //Flyの方向を取得
+    float Distance = Direction.sqrMagnitude;//自身と対象との距離
+    Direction = Direction.normalized; //距離要素を取り除く
+    Direction.y = 0.0f;
+    if (ShotFlag == false){
+        //LimitDistanceより近いので逃げる
+        if (Distance &lt;= LimitDistance){
+            transform.position -= Direction * Speed * Time.deltaTime;
+        }
+        //LimitDistanceより２倍遠いので近づく
+        else if (Distance &gt; LimitDistance * 2){
+            transform.position += Direction * Speed * Time.deltaTime;
+        }
+        Quaternion targetRotation = Quaternion.LookRotation(Fly.transform.position - transform.position);
+        targetRotation.x = 0.0f;
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10);
+    }
+    //LimitDistanceの２倍より近ければ弾を発射
+    if (Distance &lt;= LimitDistance * 2 &amp;&amp; Distance &gt; LimitDistance){
+        ShotFlag = true;
+        if (BulletCount &gt; 0){
+            if (ShotInterval &gt; ShotIntervalMax){
+                GameObject ShotBullet = (GameObject)Instantiate(Bullet, transform.position+transform.forward+Vector3.up, transform.rotation);
+                BulletShot.Play();
+                BulletCount--;
+                ShotInterval = 0;
+            }
+        }
+    }
+    if (BulletCount &lt;= 0){
+        ShotFlag = false;
+        if(Reload &gt; ReloadMax){
+            BulletCount = BulletLimite;
+            Reload = 0;
+        }
+        Reload += Time.deltaTime;
+    }
+    ShotInterval += Time.deltaTime;
+}
+</code></pre><h3 id="ｃｏｌｏｒｒｕｎｎｅｒ"><mark>ＣｏｌｏｒＲｕｎｎｅｒ</mark></h3><p><img src="https://i.imgur.com/cdDuWWx.png" alt=""></p><ul>
+<li>作品概要</li>
+<li>ゲーム制作</li>
+</ul><h4 id="作品概要1">作品概要</h4><p>ジャンル　　　　：横スクロールアクション<br>
+プラットフォーム：スマートフォン</p><p>色に支配された世界を駆けろっ！<br>
+目まぐるしく色が変わる世界。<br>
+色の変化で通れた道が通れなくなり、通れなかった道は通れるようになる。<br>
+最適なルートを判断し、世界の最果てへと到達するのだ。</p><h4 id="ゲーム制作1">ゲーム制作</h4><p>開発環境：Ｕｎｉｔｙ<br>
+開発期間：１０日前後（１日３～５時間）<br>
+開発人数：１人</p><p>１年次の冬季長期休暇中に制作。<br>
+今回の目的は「スマートフォン向けゲームの制作」。<br>
+それまで作ってこなかったジャンルであったため、挑戦したいと思った。<br>
+苦労したのは座標変換。スクリーン座標とワールド座標の転換を知らなかったが故、どのようにワールド座標を指定するかを考えた。<br>
+上・中・下の３レーンある道を移動するのにタップした位置を取得しようかと考えた。<br>
+しかし、狭いスマートフォンの画面ではプレイヤーの認識と実際のタップ位置のずれが発生すると考えられたためそれぞれの道の左端にボタンをつけることで実現した。<br>
+また、タップ位置にエネミーがいるかの判断にも苦労した。<br>
+タップで攻撃ができるのだが、その判定をどう取ればいいのかわからずに苦労した。最終的には数フレームの間だけエネミーを倒すオブジェクトをタップ位置に生成することで擬似的に表現した。</p><h3 id="だんじょんくえすと！"><mark>だんじょんくえすと！</mark></h3><p><img src="https://i.imgur.com/KliyNHL.jpg" alt=""></p><ul>
+<li>作品概要</li>
+<li>ゲーム制作</li>
+</ul><h4 id="作品概要2">作品概要</h4><p>ジャンル　　　　：ダンジョン探索型アクション<br>
+プラットフォーム：ＰＣ</p><p>トレジャーハンターとなってダンジョン最奥のお宝を入手せよ。<br>
+途中にはゾンビが立ちはだかる。打ち倒すのか？はたまた逃げるのか…<br>
+その判断はプレイヤーに任されている。</p><h4 id="ゲーム制作2">ゲーム制作</h4><p>開発環境：Ｕｎｉｔｙ<br>
+開発期間：２週間（週休２日／１日５時間前後）<br>
+開発人数：２人<br>
+担当　　：メインプログラマー（ほぼ全て作成）</p><p>このゲームは「自分の技術力をアピールする」という目的で作成した。<br>
+その中で、挑戦的な目標を設定し、それをクリアすることで技術力をアピールできるのではと考え<br>
+た。<br>
+今回の挑戦は「複数の行動を１つのキーで実行できるようにすること」。<br>
+これをクラスの継承を利用してクリアした。<br>
+元となったクラスを変数化し、それに継承したクラスのメソッドを代入することで行動の切り替え<br>
+を行った。</p><p>▼複数の行動を切り替えるメソッド</p><pre><code>public void Activate(){
+
+    //GimickKindで処理分岐
+    switch (GimickKind){
+        //宝箱
+        case GimickGenre.TreasureChest:
+        case GimickGenre.WeaponsChest:
+            //開いてなければ開ける
+            if (!OpenFlag){
+                StartCoroutine(ChestOpen());
+            }
+            //アイテムを取得する
+            else{
+                Player.GetItem = Item;
+            }
+            break;
+        //ドア
+        case GimickGenre.Door:
+            DoorMove();
+            break;
+        //鍵付きドア
+        case GimickGenre.LockDoor:
+            //鍵が集まっていれば開閉
+            if (GameManager.KeyCount &gt;= Gimick.LockDoor.LockCount){
+                DoorMove();
+            }
+            //集まってなければその旨を伝える表示をする
+            else{
+                if (InfoFlag){
+                    return;
+                }
+                StartCoroutine(DoorIsLock());
+            }
+            break;
+    }
+}
+</code></pre><p>▼プレイヤーの行動を切り替えるメソッド</p><pre><code>private void Action(){
+    //優先順：攻撃・ギミック作動・アイテム取得・アイテム使用
+    if (IsAttack){
+        Attack();
+        return;
+    }
+    else if (IsGimick){
+        GimickActivate();
+        if (IsGetItem()){
+            ItemGet();
+        }
+    }
+    else {
+        UseItem();
+    }
+}
+</code></pre></div>
