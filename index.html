@@ -102,7 +102,7 @@
 色の変化で通れた道が通れなくなり、通れなかった道は通れるようになる。<br>
 最適なルートを判断し、世界の最果てへと到達するのだ。</p><h4 id="ゲーム制作1"><a class="anchor hidden-xs" href="#ゲーム制作1" title="ゲーム制作1"><span class="octicon octicon-link"></span></a>ゲーム制作</h4><p>開発環境：Ｕｎｉｔｙ<br>
 開発期間：１０日前後（１日３～５時間）<br>
-開発人数：１人</p><p>１年次の冬季長期休暇中に制作。<br>
+開発人数：１人</p><p>１年次冬季長期休暇に制作<br>
 今回の目的は「スマートフォン向けゲームの制作」。<br>
 それまで作ってこなかったジャンルであったため、挑戦したいと思った。<br>
 苦労したのは座標変換。スクリーン座標とワールド座標の転換を知らなかったが故、どのようにワールド座標を指定するかを考えた。<br>
@@ -178,7 +178,93 @@
 }
 </code></pre></div>
 
-<video src = "mp4/test.mp4" autoplay></video>
+
+<h3 id="AngelWisper"><a class="anchor hidden-xs" href="#AngelWisper" title="AngelWisper"><span class="octicon octicon-link"></span></a><mark>天使のささやき</mark></h3><p><video src = "mp4/AngelWisper.mp4" autoplay></video></p><ul>
+<li>作品概要</li>
+<li>ゲーム制作</li>
+</ul><h4 id="作品概要1"><a class="anchor hidden-xs" href="#作品概要1" title="作品概要1"><span class="octicon octicon-link"></span></a>作品概要</h4><p>ジャンル　　　　：恋愛応援シューティング<br>
+プラットフォーム：スマートフォン</p><p>口下手な男子の会話に口をはさんで、彼の恋を成就させるのだ。<br>
+冴えない男、大谷君。<br>
+彼女いない歴＝年齢の彼だが、千載一遇のチャンスが巡ってきた。<br>
+しかし、彼はあがってしまうとコミュニケーションがうまくできなくなってしまう…<br>
+そこへ通りすがった恋愛をつかさどる天使。<br>
+この天使は大谷君の恋を実らせることはできるのか？</p><h4 id="ゲーム制作1"><a class="anchor hidden-xs" href="#ゲーム制作1" title="ゲーム制作1"><span class="octicon octicon-link"></span></a>ゲーム制作</h4><p>開発環境：Ｕｎｉｔｙ<br>
+開発期間：４０時間前後<br>
+開発人数：６人<br>
+担当　　：プログラム・プロジェクトマネージャー</p><p>２年次に日本ゲーム大賞応募作品として製作<br>
+２年生になってから初めてのゲーム制作。目標は「日本ゲーム大賞アマチュア部門入選」。<br>
+テーマは「はさむ」だった。<br>
+企画の段階から物理的な「はさむ」を敬遠したいと考えていた。<br>
+結果、「口をはさむ」という非物理的なアクションを軸にゲーム企画を立てた。<br>
+プログラムとしては、Listを初めて使用した。<br>
+敵とプレイヤーが発射する弾をListで管理し、一時停止や削除の補佐に利用した。<br>
+また、挑戦的な試みとして「switch文を使用しない難易度設定」や「複数ある弾の種類を数字で管理する」など、<br>
+今まで試したことがなかったことを取り入れた。
+</p>
+
+<p>▼Listを使用した弾の管理（一時停止）</p>
+<pre><code>
+public static bool IsFreeze{
+    set{
+        for (int i = 0; i < List.Count; i++){
+            if (value){//停止
+                Speed.Add(List[i].RB2D.velocity);//速度保存
+                List[i].RB2D.velocity = Vector2.zero;
+            }
+            else {//再生
+                if (List.Count >= 1 && Speed.Count >= 1){
+                    List[i].RB2D.velocity = Speed[i];
+                }
+            }
+        }
+        //リストクリア
+        if (!value){
+            Speed.Clear();
+        }
+    }
+}
+</code></pre>
+
+<p>▼switch文を使用しない難易度設定</p>
+<pre><code>
+public enum Diffculty {Easy,Normal,Hard };//難易度段階
+public static Diffculty NowDiffculty = Diffculty.Normal;//難易度（初期はNormal）
+
+//使用単語
+public static int[] UseMassage=new int[7] { 0,0,0,0,0,0,0};//単語一覧
+private static int UseMassageCount;//使用単語数
+private static int[] UseMassageNum = { 3, 5, 7 };//難易度別使用単語数
+
+//大谷君の会話間隔
+public static float ShotInterval;//使用会話間隔
+private static float[] ShotIntervalPre = { 5.0f, 3.0f,1.5f };//難易度別会話間隔
+
+//彼女の話題変更間隔
+public static float ChangeInterval;//使用話題変更間隔
+private static float[] ChangeIntervalPre = { 20.0f, 15.0f, 10.0f };//難易度別変更間隔
+
+//彼女の最大評価値
+public static int MaxRated;//使用最大評価値
+private static int[] MaxRatePre = { 6, 8, 8 };//難易度別最大評価値
+
+public static void DifficultySet(){
+    //キャスト変換を済ませる
+    int index = (int)NowDiffculty;
+       
+    //値設定
+    UseMassageCount = UseMassageNum[index];//使用ワード数
+    ShotInterval = ShotIntervalPre[index];//言葉発射間隔
+    ChangeInterval = ChangeIntervalPre[index];//話題変更間隔
+    MaxRated = MaxRatePre[index];//最大評価値
+    MassageSelection();//使用単語
+
+}//難易度設定メソッド
+
+
+</code></pre></div>
+
+
+
     <div class="ui-toc dropup unselectable hidden-print" style="display:none;">
         <div class="pull-right dropdown">
             <a id="tocLabel" class="ui-toc-label btn btn-default" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" title="Table of content">
